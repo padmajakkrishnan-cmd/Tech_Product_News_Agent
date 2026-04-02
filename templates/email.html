@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f4f4f7; margin: 0; padding: 20px; color: #1a1a2e; }
+  .container { max-width: 700px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .header { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); color: #fff; padding: 32px 28px; }
+  .header h1 { margin: 0 0 4px 0; font-size: 24px; letter-spacing: -0.5px; }
+  .header .date { opacity: 0.8; font-size: 14px; }
+  .section { padding: 24px 28px; border-bottom: 1px solid #eee; }
+  .section:last-child { border-bottom: none; }
+  .section-title { font-size: 18px; font-weight: 700; margin: 0 0 16px 0; color: #302b63; display: flex; align-items: center; gap: 8px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; text-transform: uppercase; }
+  .badge-biz { background: #e8f5e9; color: #2e7d32; }
+  .badge-tech { background: #e3f2fd; color: #1565c0; }
+  .badge-research { background: #fce4ec; color: #c62828; }
+  .badge-policy { background: #fff3e0; color: #e65100; }
+  .badge-bigtech { background: #ede7f6; color: #4527a0; }
+  .badge-startup { background: #fff8e1; color: #f57f17; }
+  .badge-b2c { background: #e0f7fa; color: #00695c; }
+  .badge-b2b { background: #fce4ec; color: #ad1457; }
+  .news-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0; }
+  .news-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .news-item h3 { margin: 0 0 6px 0; font-size: 15px; }
+  .news-item h3 a { color: #1a1a2e; text-decoration: none; }
+  .news-item h3 a:hover { color: #302b63; text-decoration: underline; }
+  .news-item p { margin: 0; font-size: 13px; color: #555; line-height: 1.5; }
+  .news-item .meta { font-size: 12px; color: #888; margin-top: 4px; }
+  .company-card { background: #fafafa; border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+  .company-card h3 { margin: 0 0 6px 0; font-size: 15px; }
+  .company-card p { margin: 0; font-size: 13px; color: #555; line-height: 1.5; }
+  .company-card .significance { font-style: italic; color: #302b63; margin-top: 6px; font-size: 13px; }
+  .product-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid #f0f0f0; }
+  .product-row:last-child { border-bottom: none; }
+  .rank { background: #302b63; color: #fff; font-weight: 700; font-size: 13px; min-width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .product-info h3 { margin: 0 0 4px 0; font-size: 14px; }
+  .product-info p { margin: 0; font-size: 13px; color: #555; line-height: 1.5; }
+  .footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Daily AI &amp; Tech Briefing</h1>
+    <div class="date">{{ date }}</div>
+  </div>
+
+  <!-- Section 1: AI News -->
+  <div class="section">
+    <div class="section-title">Latest AI News</div>
+    {% for item in ai_news %}
+    <div class="news-item">
+      <h3>
+        {% if item.url %}<a href="{{ item.url }}">{{ item.headline }}</a>{% else %}{{ item.headline }}{% endif %}
+        <span class="badge badge-{{ item.category }}">{{ item.category }}</span>
+      </h3>
+      <p>{{ item.summary }}</p>
+      <div class="meta">{{ item.source }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Section 2: Company Moves -->
+  <div class="section">
+    <div class="section-title">What AI Companies Are Doing</div>
+    {% for item in company_moves %}
+    <div class="company-card">
+      <h3>
+        {{ item.company }}
+        <span class="badge {% if item.type == 'big_tech' %}badge-bigtech{% else %}badge-startup{% endif %}">
+          {{ item.type | replace("_", " ") }}
+        </span>
+      </h3>
+      <p>{{ item.activity }}</p>
+      <p class="significance">{{ item.significance }}</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Section 3: Top 20 Products -->
+  <div class="section">
+    <div class="section-title">Top 20 Products Poised for AI Disruption</div>
+    {% for item in products_to_watch %}
+    <div class="product-row">
+      <div class="rank">{{ item.rank }}</div>
+      <div class="product-info">
+        <h3>
+          {{ item.product }} <span style="font-weight:400;color:#888;">by {{ item.company }}</span>
+          <span class="badge {% if item.segment == 'B2C' %}badge-b2c{% else %}badge-b2b{% endif %}">{{ item.segment }}</span>
+        </h3>
+        <p><strong>Now:</strong> {{ item.current_state }}</p>
+        <p><strong>AI potential:</strong> {{ item.ai_disruption_potential }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<div class="footer">
+  Generated by Daily AI News Agent &middot; Powered by Claude
+</div>
+</body>
+</html>
