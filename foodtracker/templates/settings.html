@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% set active = "settings" %}
+{% set date = "" %}
+{% block title %}Goals · Food &amp; Habit Tracker{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Your goals</h2>
+  <p class="hint">These targets drive your daily progress bars and the weekly discipline score.</p>
+  <form class="settings" method="post" action="/settings">
+    <label for="wake_time">Wake up by (HH:MM, 24h)</label>
+    <input id="wake_time" name="wake_time" type="time" value="{{ goals.wake_time }}" required />
+
+    <label for="calorie_target">Daily calorie target (kcal)</label>
+    <input id="calorie_target" name="calorie_target" type="number" min="800" max="6000" value="{{ goals.calorie_target }}" required />
+
+    <label for="protein_target">Daily protein target (g)</label>
+    <input id="protein_target" name="protein_target" type="number" min="20" max="400" value="{{ goals.protein_target }}" required />
+
+    <label for="workouts_per_week">Workouts per week</label>
+    <input id="workouts_per_week" name="workouts_per_week" type="number" min="0" max="14" value="{{ goals.workouts_per_week }}" required />
+
+    <label for="water_target">Water target (glasses/day)</label>
+    <input id="water_target" name="water_target" type="number" min="0" max="20" value="{{ goals.water_target }}" required />
+
+    <label for="sleep_target_hours">Sleep target (hours/night)</label>
+    <input id="sleep_target_hours" name="sleep_target_hours" type="number" step="0.5" min="4" max="12" value="{{ goals.sleep_target_hours }}" required />
+
+    <div style="margin-top:18px;"><button type="submit">Save goals</button></div>
+  </form>
+</div>
+{% endblock %}

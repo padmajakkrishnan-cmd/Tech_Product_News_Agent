@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% set active = "today" %}
+{% block title %}Today · Food &amp; Habit Tracker{% endblock %}
+
+{% block content %}
+<div class="date-row">
+  <label for="logDate" style="color:var(--muted);font-size:13px;">Logging for</label>
+  <input type="date" id="logDate" value="{{ date }}" />
+</div>
+
+<!-- ------------------------------------------------ logging card -->
+<div class="card logbox">
+  <h2>Log a meal or habit</h2>
+  <textarea id="logText" placeholder="e.g. &quot;Woke up at 6:30, had 2 boiled eggs and oatmeal for breakfast, walked 15 min after lunch, did a 30 min run.&quot;"></textarea>
+  <div class="input-actions">
+    <button id="saveBtn">💾 Save</button>
+    <button id="micBtn" class="mic secondary">🎤 Speak</button>
+    <label class="btn secondary" style="display:inline-flex;align-items:center;">
+      📷 Photo
+      <input type="file" id="photoInput" accept="image/*" capture="environment" hidden />
+    </label>
+  </div>
+  <input id="photoHint" type="text" placeholder="Optional photo context (e.g. 'lunch, large plate')"
+         style="margin-top:10px;width:100%;background:var(--card-2);border:1px solid var(--border);color:var(--text);padding:9px;border-radius:10px;" />
+  <div id="logStatus" class="status"></div>
+  <div class="hint">Type, speak, or snap a photo. Claude figures out the foods, macros, and habits for you.</div>
+</div>
+
+<!-- ------------------------------------------------ macro summary -->
+<div class="card">
+  <h2>Macros · {{ date }}</h2>
+  <div class="macros">
+    <div class="macro"><div class="v">{{ report.totals.calories | round | int }}</div><div class="l">Calories</div><div class="u">kcal</div></div>
+    <div class="macro"><div class="v">{{ report.totals.protein_g | round | int }}</div><div class="l">Protein</div><div class="u">g</div></div>
+    <div class="macro"><div class="v">{{ report.totals.carbs_g | round | int }}</div><div class="l">Carbs</div><div class="u">g</div></div>
+    <div class="macro"><div class="v">{{ report.totals.fat_g | round | int }}</div><div class="l">Fat</div><div class="u">g</div></div>
+    <div class="macro"><div class="v">{{ report.totals.fiber_g | round | int }}</div><div class="l">Fiber</div><div class="u">g</div></div>
+  </div>
+
+  {% set cp = report.macro_progress.calories %}
+  {% set pp = report.macro_progress.protein_g %}
+  <div style="margin-top:16px;">
+    <div class="progress-line"><span>Calories vs goal</span><span>{{ cp.value | round | int }} / {{ cp.target }} kcal</span></div>
+    <div class="bar {{ 'over' if cp.pct > 110 }}"><span style="width: {{ [cp.pct, 100] | min }}%"></span></div>
+  </div>
+  <div style="margin-top:12px;">
+    <div class="progress-line"><span>Protein vs goal</span><span>{{ pp.value | round | int }} / {{ pp.target }} g</span></div>
+    <div class="bar protein"><span style="width: {{ [pp.pct, 100] | min }}%"></span></div>
+  </div>
+</div>
+
+<!-- ------------------------------------------------ insights -->
+<div class="card">
+  <h2>💡 Daily insights</h2>
+  <div class="insights">{{ report.insights }}</div>
+</div>
+
+<!-- ------------------------------------------------ food log -->
+<div class="card">
+  <h2>Food log</h2>
+  {% if report.foods %}
+    {% for f in report.foods %}
+    <div class="entry">
+      <div>
+        <div class="main">{{ f.name }}{% if f.quantity %} <span class="sub">· {{ f.quantity }}</span>{% endif %}
+          {% if f.meal %}<span class="tag meal">{{ f.meal }}</span>{% endif %}
+          <span class="tag src">{{ f.source }}</span>
+        </div>
+        <div class="sub">{{ f.calories | round | int }} kcal · P {{ f.protein_g | round | int }}g · C {{ f.carbs_g | round | int }}g · F {{ f.fat_g | round | int }}g</div>
+      </div>
+      <button class="ghost" data-del="food:{{ f.id }}" title="Delete">✕</button>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">No food logged yet today.</div>
+  {% endif %}
+</div>
+
+<!-- ------------------------------------------------ habit log -->
+<div class="card">
+  <h2>Habits &amp; lifestyle</h2>
+  {% if report.habits %}
+    {% for h in report.habits %}
+    <div class="entry">
+      <div>
+        <div class="main">{{ habit_types.get(h.habit_type, h.habit_type) }}
+          <span class="tag src">{{ h.source }}</span>
+        </div>
+        <div class="sub">{{ h.detail or h.value }}</div>
+      </div>
+      <button class="ghost" data-del="habit:{{ h.id }}" title="Delete">✕</button>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">No habits logged yet today.</div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="/static/app.js"></script>{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% set active = "weekly" %}
+{% block title %}Weekly · Food &amp; Habit Tracker{% endblock %}
+
+{% block content %}
+{% set sc = report.scorecard %}
+<div class="card">
+  <h2>Weekly discipline · {{ report.start }} → {{ report.end }}</h2>
+  <div class="score-hero">
+    <div class="score-circle" style="--p: {{ sc.score }};">
+      <div class="inner">
+        <div class="num">{{ sc.score }}</div>
+        <div class="grade">{{ sc.grade }}</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:18px;font-weight:700;">{{ sc.label }}</div>
+      <div class="sub" style="color:var(--muted);font-size:13px;margin-top:4px;">
+        {{ sc.days_logged }} day(s) with data this week · score out of 100
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>How disciplined were you?</h2>
+  {% for c in sc.components %}
+  <div class="component">
+    <div class="progress-line">
+      <span>{{ c.label }} <span class="det">· {{ c.detail }}</span></span>
+      <span>{{ c.pct }}%</span>
+    </div>
+    <div class="bar {{ 'protein' if c.pct >= 80 else ('over' if c.pct < 40 else '') }}">
+      <span style="width: {{ c.pct }}%"></span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2>📋 Coach's summary</h2>
+  <div class="insights">{{ report.narrative }}</div>
+</div>
+
+<div class="card">
+  <h2>Calories by day</h2>
+  <div class="weekgrid">
+    {% for d in report.daily %}
+    <div class="day">
+      <div class="d">{{ d.weekday }}</div>
+      <div class="c">{{ d.totals.calories | round | int if d.totals.calories else "—" }}</div>
+      <div class="dots">
+        {{ "🌅" if d.habit_index.get("wake_time") }}{{ "🚶" if d.habit_index.get("walk_after_lunch") }}{{ "💪" if d.habit_index.get("workout") }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="hint">🌅 woke logged · 🚶 walk after lunch · 💪 workout</div>
+</div>
+{% endblock %}

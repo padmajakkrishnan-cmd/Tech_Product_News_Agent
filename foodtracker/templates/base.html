@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>{% block title %}Food &amp; Habit Tracker{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">🥗 <h1>Food &amp; Habit Tracker</h1></div>
+    <nav class="nav">
+      <a href="/?date={{ date }}" class="{{ 'active' if active == 'today' }}">Today</a>
+      <a href="/weekly?date={{ date }}" class="{{ 'active' if active == 'weekly' }}">Weekly</a>
+      <a href="/settings" class="{{ 'active' if active == 'settings' }}">Goals</a>
+    </nav>
+  </div>
+  <div class="wrap">
+    {% block content %}{% endblock %}
+  </div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
